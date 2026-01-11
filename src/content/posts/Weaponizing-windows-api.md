@@ -21,7 +21,7 @@ Process injection remains one of the most prevalent techniques used by malware a
 
 In this blog, we'll dive deep into classic process injection — the foundational malware technique that powers countless real-world attacks. While `CreateRemoteThread` is one of Windows' legitimate APIs for thread management, attackers abuse it to inject shellcode into remote processes, achieving stealthy code execution within trusted applications like notepad.exe.
 
-We'll dissect a complete C implementation that:
+We'll dissect a complete C++ implementation that:
 
 - Enumerates processes using `ToolHelp32Snapshot` to identify targets like notepad.exe
 
