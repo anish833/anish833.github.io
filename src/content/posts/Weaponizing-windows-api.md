@@ -14,7 +14,7 @@ In this blog, we'll dive deep into classic process injection — the foundationa
 While CreateRemoteThread is one of Windows' legitimate APIs for thread management, attackers abuse it to inject shellcode into remote processes, achieving stealthy code execution within trusted applications like notepad.exe. We'll dissect a complete C implementation that spans process enumeration, memory manipulation, and remote thread hijacking — exactly how modern malware evades detection
 
 Let's get started
-## What is process injection**
+## What is process injection
 
 Process injection remains one of the most prevalent techniques used by malware authors to evade detection. By executing malicious code within the context of legitimate processes, attackers gain stealth, privilege escalation, and persistence. This first installment explores the classic `CreateRemoteThread` injection technique - still widely used despite modern defenses.
 
