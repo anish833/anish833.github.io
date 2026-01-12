@@ -3,7 +3,7 @@ title: "Obfuscated JS in CDATA"
 published: 2025-06-08
 updated: 2025-06-08
 description: "A deep dive into how attackers abuse SVG images with embedded JavaScript to execute AiTM phishing and bypass MFA using stealthy obfuscation and dynamic payloads."
-image: "posts/ReverseEngineering-With-ls/cover3.png"
+image: "posts/Obfuscatd-JS-in-CDATA/0.png"
 tags: [Reverse Engineering, Hijacking]
 category: "Reverse Engineering"
 draft: false
