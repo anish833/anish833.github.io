@@ -356,3 +356,7 @@ For now, you’ve crossed the abstraction layer — and that’s where real Wind
 [https://github.com/anish833/process-injection/blob/main/injector.c](https://github.com/anish833/process-injection/blob/main/injector.c)
 
 
+## Credits & Acknowledgements
+
+Special credit to crr0ww
+👉 https://www.youtube.com/@crr0ww
