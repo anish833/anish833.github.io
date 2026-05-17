@@ -162,7 +162,7 @@ MyFirstObject
 
 Congratulations — you just created your first Object Manager object.
 
-![Object](posts/Green-Plasma-nitty-gritty/Object.png)
+![Object](posts/Green-Plasma-nitty-gritty/object.png)
 
 ### Why This Matters for Exploitation
 
