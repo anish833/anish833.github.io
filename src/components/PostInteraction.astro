@@ -7,7 +7,7 @@ interface Props {
 	class?: string;
 }
 
-const { postTitle = "Check out this post", postUrl = "", className } = Astro.props;
+const { postTitle = "Check out this post", postUrl = "", class: className } = Astro.props;
 ---
 
 <div class:list={["flex flex-col gap-4 mb-6", className]}>
@@ -111,7 +111,7 @@ const { postTitle = "Check out this post", postUrl = "", className } = Astro.pro
 	</div>
 </div>
 
-<script define:vars={{ postUrl }}>
+<script is:inline define:vars={{ postUrl }}>
 	// Reaction Button Functionality
 	const reactionContainer = document.getElementById("reaction-container");
 	const reactionKey = `post-reaction-${postUrl || window.location.pathname}`;
