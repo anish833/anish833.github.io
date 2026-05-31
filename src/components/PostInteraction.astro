@@ -1,0 +1,246 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	postTitle?: string;
+	postUrl?: string;
+	class?: string;
+}
+
+const { postTitle = "Check out this post", postUrl = "", className } = Astro.props;
+---
+
+<div class:list={["flex flex-col gap-4 mb-6", className]}>
+	<!-- Reaction Buttons -->
+	<div class="flex items-center gap-3 p-4 rounded-xl bg-black/2 dark:bg-white/5 backdrop-blur-sm border border-black/5 dark:border-white/10">
+		<span class="text-sm font-medium text-black/60 dark:text-white/60 mr-2">React:</span>
+		<div class="flex gap-2 flex-wrap" id="reaction-container">
+			{["👍", "❤️", "😊", "🔥", "💡"].map((emoji) => (
+				<button
+					data-emoji={emoji}
+					class="reaction-btn transition-all hover:scale-125 active:scale-110 text-xl p-2 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer"
+					title={`React with ${emoji}`}
+					type="button"
+				>
+					{emoji}
+				</button>
+			))}
+		</div>
+	</div>
+
+	<!-- Comment and Share Buttons -->
+	<div class="flex gap-3 flex-wrap">
+		<!-- Share Button -->
+		<button
+			id="share-btn"
+			class="flex-1 min-w-[150px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl 
+				bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 
+				border border-black/10 dark:border-white/10
+				transition-all active:scale-95 font-medium text-sm
+				text-black/70 dark:text-white/70"
+			title="Share this post"
+			type="button"
+		>
+			<Icon name="material-symbols:share" class="text-lg" />
+			<span>Share</span>
+		</button>
+	</div>
+
+	<!-- Share Dialog (Hidden by default) -->
+	<div
+		id="share-dialog"
+		class="hidden fixed inset-0 bg-black/50 dark:bg-black/60 flex items-center justify-center z-50 p-4"
+	>
+		<div class="bg-white dark:bg-[var(--card-bg)] rounded-2xl p-6 max-w-sm w-full shadow-lg">
+			<div class="flex justify-between items-center mb-4">
+				<h3 class="text-lg font-bold text-black/90 dark:text-white/90">Share this post</h3>
+				<button
+					id="share-close-btn"
+					class="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition"
+					type="button"
+				>
+					<Icon name="material-symbols:close-rounded" class="text-xl text-black/60 dark:text-white/60" />
+				</button>
+			</div>
+
+			<div class="space-y-2">
+				<!-- Twitter Share -->
+				<a
+					href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(postTitle)}&url=${encodeURIComponent(postUrl)}`}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+				>
+					<span class="text-xl">𝕏</span>
+					<span class="text-sm font-medium text-black/70 dark:text-white/70">Share on Twitter</span>
+				</a>
+
+				<!-- Facebook Share -->
+				<a
+					href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+				>
+					<span class="text-xl">f</span>
+					<span class="text-sm font-medium text-black/70 dark:text-white/70">Share on Facebook</span>
+				</a>
+
+				<!-- LinkedIn Share -->
+				<a
+					href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+				>
+					<span class="text-xl">in</span>
+					<span class="text-sm font-medium text-black/70 dark:text-white/70">Share on LinkedIn</span>
+				</a>
+
+				<!-- Copy Link -->
+				<button
+					id="copy-link-btn"
+					class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition"
+					type="button"
+				>
+					<Icon name="material-symbols:link-rounded" class="text-xl text-black/60 dark:text-white/60" />
+					<span class="text-sm font-medium text-black/70 dark:text-white/70">Copy link</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script define:vars={{ postUrl }}>
+	// Reaction Button Functionality
+	const reactionContainer = document.getElementById("reaction-container");
+	const reactionKey = `post-reaction-${postUrl || window.location.pathname}`;
+
+	// Load saved reactions
+	function loadReactions() {
+		const saved = localStorage.getItem(reactionKey);
+		if (saved) {
+			const reactions = JSON.parse(saved);
+			Object.entries(reactions).forEach(([emoji, count]) => {
+				const btn = document.querySelector(`[data-emoji="${emoji}"]`);
+				if (btn && count > 0) {
+					btn.classList.add("active");
+					btn.setAttribute("data-count", count);
+				}
+			});
+		}
+	}
+
+	// Save reactions to localStorage
+	function saveReactions() {
+		const reactions = {};
+		document.querySelectorAll(".reaction-btn").forEach((btn) => {
+			const emoji = btn.getAttribute("data-emoji");
+			const count = parseInt(btn.getAttribute("data-count") || "0");
+			reactions[emoji] = count;
+		});
+		localStorage.setItem(reactionKey, JSON.stringify(reactions));
+	}
+
+	// Reaction button click handler
+	reactionContainer?.addEventListener("click", (e) => {
+		const btn = e.target.closest(".reaction-btn");
+		if (!btn) return;
+
+		const isActive = btn.classList.toggle("active");
+		const currentCount = parseInt(btn.getAttribute("data-count") || "0");
+
+		if (isActive) {
+			btn.setAttribute("data-count", currentCount + 1);
+		} else {
+			btn.setAttribute("data-count", Math.max(0, currentCount - 1));
+			if (currentCount - 1 === 0) {
+				btn.classList.remove("active");
+			}
+		}
+
+		saveReactions();
+	});
+
+	loadReactions();
+
+	// Share Button and Dialog Functionality
+	const shareBtn = document.getElementById("share-btn");
+	const shareDialog = document.getElementById("share-dialog");
+	const shareCloseBtn = document.getElementById("share-close-btn");
+	const copyLinkBtn = document.getElementById("copy-link-btn");
+
+	shareBtn?.addEventListener("click", () => {
+		// Try native share API first
+		if (navigator.share) {
+			navigator.share({
+				title: document.title,
+				text: document.querySelector('meta[property="og:description"]')?.getAttribute("content") ||
+					"Check out this post",
+				url: postUrl || window.location.href,
+			}).catch((err) => {
+				if (err.name !== "AbortError") {
+					console.error("Share failed:", err);
+				}
+			});
+		} else {
+			// Fall back to custom dialog
+			shareDialog?.classList.remove("hidden");
+		}
+	});
+
+	shareCloseBtn?.addEventListener("click", () => {
+		shareDialog?.classList.add("hidden");
+	});
+
+	shareDialog?.addEventListener("click", (e) => {
+		if (e.target === shareDialog) {
+			shareDialog.classList.add("hidden");
+		}
+	});
+
+	copyLinkBtn?.addEventListener("click", async () => {
+		try {
+			await navigator.clipboard.writeText(postUrl || window.location.href);
+			const originalText = copyLinkBtn.innerHTML;
+			copyLinkBtn.innerHTML = `<svg class="text-xl text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> <span>Copied!</span>`;
+			setTimeout(() => {
+				copyLinkBtn.innerHTML = originalText;
+			}, 2000);
+		} catch (err) {
+			console.error("Failed to copy:", err);
+		}
+	});
+</script>
+
+<style>
+	.reaction-btn {
+		position: relative;
+	}
+
+	.reaction-btn.active {
+		background: color-mix(in srgb, var(--primary) 20%, transparent);
+		color: var(--primary);
+	}
+
+	:global(.dark) .reaction-btn.active {
+		background: color-mix(in srgb, var(--primary) 30%, transparent);
+	}
+
+	.reaction-btn.active::after {
+		content: attr(data-count);
+		position: absolute;
+		top: -0.5rem;
+		right: -0.5rem;
+		background-color: var(--primary);
+		color: white;
+		font-size: 0.75rem;
+		border-radius: 9999px;
+		width: 1.25rem;
+		height: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+	}
+</style>
